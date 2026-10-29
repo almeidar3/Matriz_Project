@@ -2,10 +2,10 @@
 
 ## Restrições conhecidas
 
-- Esta ficha cobre análise, especificação e preparação do contexto; não deve ser implementado código nesta fase.
-- A escolha de linguagem, framework, base de dados e arquitetura fica para a aula seguinte.
+- A Ficha 01 cobre análise e especificação; a Ficha 02 acrescenta o Architecture Pack; a Ficha 03 pede a implementação académica do MVP.
+- Flask + SQLite + HTML/CSS/JavaScript é a stack escolhida para a atividade local, não uma decisão de produção.
 - O Specification Pack é uma proposta inicial para apoiar a conversa com o cliente, não uma aprovação dos requisitos.
-- O MVP proposto limita-se a um fluxo básico de projetos e tarefas; funcionalidades fora do âmbito estão enumeradas em [`requirements.md`](requirements.md).
+- A Ficha 03 alarga o MVP com autenticação, CRUD, prioridades, múltiplos responsáveis, comentários, pesquisa/filtros e painel. Registo público e recuperação de palavra-passe ficam fora do âmbito.
 
 ## Factos confirmados
 
@@ -19,7 +19,10 @@ Não tratar qualquer outro ponto deste pack como facto confirmado.
 - A aplicação tem espaços de trabalho e utilizadores autenticados; a forma de criar contas e autenticar utilizadores não está escolhida.
 - Há dois papéis iniciais: administrador e membro. Os membros têm acesso aos projetos do seu espaço de trabalho; o modelo de permissões precisa de confirmação.
 - O MVP usa três estados fixos: `A fazer`, `Em curso` e `Concluída`.
-- Tarefas pertencem a um projeto; responsável e data limite são opcionais.
+- Tarefas pertencem a um projeto; podem ter vários responsáveis elegíveis e uma data limite opcional.
+- A API usa os estados `TODO`, `IN_PROGRESS` e `DONE`; a interface apresenta os rótulos portugueses correspondentes.
+- A prioridade tem os valores `LOW`, `MEDIUM` e `HIGH`, com valor inicial `MEDIUM`.
+- Tarefas podem ter comentários; autor e data são definidos no servidor a partir da sessão e do relógio do servidor.
 - O progresso é a proporção de tarefas concluídas sobre o total; um projeto sem tarefas apresenta 0%.
 - O fluxo de convite, remoção e transferência de trabalho de membros não está definido; US-07 é `Should` por essa razão.
 - Os valores Must/Should e todas as funcionalidades descritas são prioridades propostas, não decisões do cliente.
@@ -38,7 +41,7 @@ Não tratar qualquer outro ponto deste pack como facto confirmado.
 - Quem são os utilizadores e se há papéis adicionais, equipas, clientes externos ou convidados.
 - Como funcionam espaços de trabalho, pertença a projetos e permissões por projeto.
 - Quais campos são obrigatórios em projetos e tarefas; limites de tamanho e regras para datas passadas.
-- Se estados, prioridades, etiquetas, comentários, anexos, notificações ou histórico são necessários.
+- Se etiquetas, anexos, notificações ou histórico são necessários.
 - Como se definem e apresentam progresso e tarefas canceladas, caso existam.
 - Necessidades de acessibilidade, idiomas, navegadores, dispositivos e utilização offline.
 - Metas de desempenho, disponibilidade, escala e recuperação.
@@ -57,4 +60,4 @@ Não tratar qualquer outro ponto deste pack como facto confirmado.
 
 ## Limitação de âmbito
 
-Não escolher tecnologias, desenhar arquitetura, modelar base de dados ou iniciar implementação nesta ficha. Resolver decisões pendentes com o cliente ou documentar explicitamente a aprovação antes de avançar.
+O Architecture Pack e a implementação da Ficha 03 são propostas académicas para validar o fluxo do MVP. Não constituem aprovação comercial nem uma configuração pronta para produção. Permanecem pendentes as decisões de produção e a validação do cliente.

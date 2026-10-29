@@ -77,6 +77,61 @@ Como administrador do espaço de trabalho, quero adicionar ou remover membros, p
 
 Esta história depende da definição do processo de convite, identidade e tratamento de tarefas de um membro removido; esses detalhes não ficam especificados nesta proposta.
 
+## Extensões da Ficha 03 (propostas académicas)
+
+Estas histórias alargam o MVP para cumprir a atividade; não são requisitos confirmados pelo cliente.
+
+Na Ficha 03, US-11 amplia US-05: a proposta inicial permitia um responsável opcional; a implementação académica permite vários responsáveis do mesmo espaço.
+
+### US-08 — Autenticar utilizador
+
+Como membro registado, quero iniciar e terminar sessão e consultar o meu perfil, para aceder apenas aos dados permitidos.
+
+- Credenciais demonstrativas válidas iniciam uma sessão; credenciais inválidas e pedidos sem sessão são recusados.
+- O perfil devolvido corresponde à identidade da sessão; a API nunca aceita identidade enviada no corpo como prova de autorização.
+- Terminar sessão invalida a sessão existente.
+
+### US-09 — Gerir projetos
+
+Como administrador do espaço, quero listar, consultar, editar, pesquisar e eliminar projetos, para manter o portefólio do espaço atualizado.
+
+- Só administradores do espaço criam, editam ou eliminam projetos.
+- Membros autenticados consultam projetos do seu espaço; recursos de outros espaços não são revelados.
+- A pesquisa por nome e a paginação respeitam os parâmetros documentados na API.
+- Eliminar um projeto elimina as respetivas tarefas, atribuições e comentários em cascata.
+
+### US-10 — Gerir tarefas com prioridade
+
+Como membro autorizado, quero consultar, editar e eliminar tarefas e definir estado e prioridade, para manter o trabalho atualizado.
+
+- Título tem 3 a 150 caracteres; descrição tem no máximo 2000.
+- Estados API: `TODO`, `IN_PROGRESS`, `DONE`; prioridade: `LOW`, `MEDIUM`, `HIGH`; prioridade inicial `MEDIUM`.
+- Filtros e contagens refletem todas as tarefas correspondentes, mesmo com paginação.
+
+### US-11 — Gerir responsáveis
+
+Como membro autorizado, quero associar e remover vários responsáveis elegíveis numa tarefa.
+
+- Cada responsável pertence ao mesmo espaço do projeto.
+- A mesma atribuição não pode ser criada duas vezes.
+- Um utilizador de outro espaço não pode ser atribuído nem consultar a tarefa.
+
+### US-12 — Comentar tarefa
+
+Como membro autorizado, quero adicionar e consultar comentários de uma tarefa, para partilhar contexto do trabalho.
+
+- O conteúdo tem 1 a 2000 caracteres e não pode ser apenas espaços.
+- Autor e data são determinados pelo servidor; o cliente não pode falsificá-los.
+- Só membros autorizados do espaço consultam ou acrescentam comentários.
+
+### US-13 — Consultar painel e filtrar tarefas
+
+Como membro, quero ver os projetos acessíveis e as contagens por estado e filtrar tarefas por estado e prioridade.
+
+- O painel só agrega projetos do espaço ao qual o utilizador tem acesso.
+- Contagens são calculadas sobre o conjunto total, e não apenas sobre resultados da página atual.
+- Criar, editar ou eliminar uma tarefa atualiza a lista e as contagens sem recarregar a página.
+
 ## Casos excecionais e limites
 
 - Nome de projeto ou título de tarefa vazio ou composto apenas por espaços: rejeitar a criação e indicar o campo inválido.

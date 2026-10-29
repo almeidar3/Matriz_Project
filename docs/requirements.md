@@ -30,6 +30,23 @@ Os papéis e permissões são pressupostos para estruturar a proposta; devem ser
 
 As prioridades são propostas para discussão. `Must` define o núcleo sugerido do MVP e `Should` uma capacidade desejável que pode ser adiada sem bloquear a validação do fluxo principal.
 
+## Extensões académicas da Ficha 03
+
+As capacidades abaixo são necessárias para o exercício de implementação, mas continuam a ser propostas, não requisitos confirmados pelo cliente:
+
+| ID | Capacidade proposta | Regra adotada para o exercício |
+|---|---|---|
+| RF-09 | Um utilizador pode iniciar sessão, consultar o próprio perfil e terminar sessão. | Contas demonstrativas pré-criadas; sem registo público nem recuperação de palavra-passe. |
+| RF-10 | Administradores gerem projetos do espaço; membros autenticados consultam projetos acessíveis e pesquisam por nome. | O projeto pertence ao espaço; a identidade não é aceite do cliente como prova de autorização. |
+| RF-11 | Membros autorizados gerem tarefas de um projeto acessível. | Título entre 3 e 150 caracteres; descrição até 2000; estado `TODO`, `IN_PROGRESS` ou `DONE`; prioridade `LOW`, `MEDIUM` ou `HIGH`, inicial `MEDIUM`. |
+| RF-12 | Uma tarefa pode ter vários responsáveis, que podem ser associados e removidos. | Cada responsável pertence ao mesmo espaço; a mesma associação não pode repetir-se. |
+| RF-13 | Membros autorizados podem adicionar e listar comentários. | Conteúdo entre 1 e 2000 caracteres e não apenas espaços; autor e data são definidos no servidor. |
+| RF-14 | O painel apresenta projetos acessíveis e contagens por estado; tarefas podem ser filtradas por estado e prioridade. | Contagens calculadas sobre o conjunto total filtrado, não apenas sobre a página atual. |
+
+Na API, `TODO`, `IN_PROGRESS` e `DONE` são os valores persistidos. A interface apresenta `A fazer`, `Em curso` e `Concluída` sem alterar o contrato.
+
+Para a implementação académica da Ficha 03, RF-12 amplia RF-04: em vez de no máximo um responsável opcional, uma tarefa pode ter vários membros do mesmo espaço. A regra original permanece registada como proposta da Ficha 02; a ampliação também não está validada pelo cliente.
+
 ## Requisitos não funcionais propostos
 
 Estes requisitos carecem de confirmação e de critérios técnicos na fase seguinte:
@@ -42,7 +59,7 @@ Estes requisitos carecem de confirmação e de critérios técnicos na fase segu
 
 ## Âmbito do MVP proposto
 
-Inclui projetos, tarefas, estados fixos, atribuição opcional de responsável e prazo, vistas de lista e quadro, resumo de progresso e controlo de acesso a um espaço de trabalho. O fluxo principal é: um administrador cria um projeto; membros autorizados criam e atualizam tarefas; a equipa consulta o estado e o resumo do projeto.
+O MVP base inclui projetos, tarefas, estados fixos, responsável e prazo opcionais, vistas de lista e quadro, resumo de progresso e controlo de acesso a um espaço de trabalho. Para a Ficha 03, o âmbito académico acrescenta autenticação, CRUD de projetos e tarefas, prioridade, múltiplos responsáveis, comentários, pesquisa, filtros e painel. Estas extensões são propostas para o exercício, ainda não validadas pelo cliente.
 
 O resumo é calculado como tarefas concluídas / total de tarefas. Se o total for zero, apresenta 0%. Não há nesta proposta outros estados, fluxos de aprovação ou fórmulas de progresso.
 

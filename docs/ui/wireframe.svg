@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="720" viewBox="0 0 1100 720" role="img" aria-labelledby="title description">
+  <title id="title">Wireframe de baixa fidelidade: detalhe de projeto Matriz</title>
+  <desc id="description">Vista de projeto com navegação, resumo de tarefas e lista de tarefas com estado, responsável e prazo.</desc>
+  <rect width="1100" height="720" fill="#f4f4f1"/>
+  <rect x="0" y="0" width="220" height="720" fill="#e6e7e2"/>
+  <text x="28" y="44" font-family="sans-serif" font-size="22" font-weight="700" fill="#202522">Matriz</text>
+  <text x="28" y="91" font-family="sans-serif" font-size="12" font-weight="700" fill="#686e68">ESPAÇO DE TRABALHO</text>
+  <text x="28" y="124" font-family="sans-serif" font-size="15" fill="#202522">Equipa Produto</text>
+  <line x1="20" y1="148" x2="200" y2="148" stroke="#c5c8c0"/>
+  <text x="28" y="185" font-family="sans-serif" font-size="12" font-weight="700" fill="#686e68">PROJETOS</text>
+  <rect x="14" y="201" width="192" height="38" rx="4" fill="#d3d7cf"/>
+  <rect x="14" y="201" width="3" height="38" fill="#47735c"/>
+  <text x="29" y="225" font-family="sans-serif" font-size="14" font-weight="600" fill="#202522">Projeto exemplo</text>
+  <text x="29" y="267" font-family="sans-serif" font-size="14" fill="#454b45">Website institucional</text>
+  <text x="29" y="307" font-family="sans-serif" font-size="14" fill="#454b45">Aplicação móvel</text>
+  <rect x="248" y="30" width="822" height="58" rx="4" fill="#ffffff" stroke="#d7d9d3"/>
+  <text x="273" y="65" font-family="sans-serif" font-size="14" fill="#686e68">Projetos</text>
+  <text x="326" y="65" font-family="sans-serif" font-size="14" fill="#9a9e97">/</text>
+  <text x="345" y="65" font-family="sans-serif" font-size="14" font-weight="600" fill="#202522">Projeto exemplo</text>
+  <text x="260" y="138" font-family="sans-serif" font-size="25" font-weight="700" fill="#202522">Projeto exemplo</text>
+  <text x="260" y="164" font-family="sans-serif" font-size="14" fill="#686e68">Descrição breve do projeto</text>
+  <rect x="915" y="113" width="155" height="42" rx="4" fill="#47735c"/>
+  <text x="936" y="139" font-family="sans-serif" font-size="14" font-weight="600" fill="#ffffff">+ Nova tarefa</text>
+  <rect x="260" y="190" width="255" height="112" rx="4" fill="#ffffff" stroke="#d7d9d3"/>
+  <text x="280" y="220" font-family="sans-serif" font-size="12" font-weight="700" fill="#686e68">TOTAL DE TAREFAS</text>
+  <text x="280" y="272" font-family="sans-serif" font-size="34" font-weight="700" fill="#202522">8</text>
+  <rect x="530" y="190" width="255" height="112" rx="4" fill="#ffffff" stroke="#d7d9d3"/>
+  <text x="550" y="220" font-family="sans-serif" font-size="12" font-weight="700" fill="#686e68">CONCLUÍDAS</text>
+  <text x="550" y="272" font-family="sans-serif" font-size="34" font-weight="700" fill="#202522">3</text>
+  <rect x="800" y="190" width="270" height="112" rx="4" fill="#ffffff" stroke="#d7d9d3"/>
+  <text x="820" y="220" font-family="sans-serif" font-size="12" font-weight="700" fill="#686e68">PROGRESSO</text>
+  <text x="820" y="272" font-family="sans-serif" font-size="34" font-weight="700" fill="#202522">37,5%</text>
+  <text x="260" y="348" font-family="sans-serif" font-size="15" font-weight="700" fill="#202522">Tarefas</text>
+  <text x="327" y="348" font-family="sans-serif" font-size="14" fill="#686e68">Lista</text>
+  <text x="372" y="348" font-family="sans-serif" font-size="14" fill="#686e68">Quadro</text>
+  <line x1="260" y1="362" x2="1070" y2="362" stroke="#c5c8c0"/>
+  <rect x="260" y="379" width="810" height="42" fill="#e6e7e2"/>
+  <text x="278" y="405" font-family="sans-serif" font-size="12" font-weight="700" fill="#555b55">TAREFA</text>
+  <text x="675" y="405" font-family="sans-serif" font-size="12" font-weight="700" fill="#555b55">RESPONSÁVEL</text>
+  <text x="835" y="405" font-family="sans-serif" font-size="12" font-weight="700" fill="#555b55">PRAZO</text>
+  <text x="955" y="405" font-family="sans-serif" font-size="12" font-weight="700" fill="#555b55">ESTADO</text>
+  <g font-family="sans-serif" font-size="14" fill="#303630">
+    <rect x="260" y="421" width="810" height="55" fill="#ffffff" stroke="#e1e2dd"/>
+    <text x="278" y="454">Preparar estrutura inicial</text><text x="675" y="454">Ana</text><text x="835" y="454">12 nov</text><text x="955" y="454">Em curso</text>
+    <rect x="260" y="476" width="810" height="55" fill="#ffffff" stroke="#e1e2dd"/>
+    <text x="278" y="509">Rever requisitos do MVP</text><text x="675" y="509">Rui</text><text x="835" y="509">15 nov</text><text x="955" y="509">A fazer</text>
+    <rect x="260" y="531" width="810" height="55" fill="#ffffff" stroke="#e1e2dd"/>
+    <text x="278" y="564">Validar fluxo com a equipa</text><text x="675" y="564">Sem responsável</text><text x="835" y="564">—</text><text x="955" y="564">Concluída</text>
+  </g>
+  <text x="260" y="635" font-family="sans-serif" font-size="12" fill="#777d76">Wireframe conceptual; conteúdo ilustrativo.</text>
+</svg>

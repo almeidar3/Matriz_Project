@@ -1,0 +1,694 @@
+openapi: 3.1.0
+info:
+  title: Matriz API
+  version: 1.0.0
+  description: >-
+    Contrato da aplicação académica da Ficha 03. A sessão usa cookie HttpOnly
+    assinado pelo Flask; pedidos mutáveis também exigem X-CSRF-Token.
+servers:
+  - url: /api
+    description: API servida pela aplicação Flask local.
+tags:
+  - name: Autenticação
+  - name: Espaços
+  - name: Projetos
+  - name: Tarefas
+  - name: Comentários
+paths:
+  /auth/csrf:
+    get:
+      tags: [Autenticação]
+      operationId: getCsrfToken
+      summary: Obter token CSRF e iniciar uma sessão anónima
+      responses:
+        '200':
+          description: Token CSRF associado ao cookie de sessão.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [csrfToken]
+                properties:
+                  csrfToken: { type: string }
+  /auth/login:
+    post:
+      tags: [Autenticação]
+      operationId: login
+      summary: Iniciar sessão
+      security:
+        - csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username: { type: string }
+                password: { type: string, format: password }
+      responses:
+        '200':
+          description: Sessão iniciada; o servidor define o cookie HttpOnly.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user, csrfToken]
+                properties:
+                  user: { $ref: '#/components/schemas/User' }
+                  csrfToken: { type: string }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /auth/logout:
+    post:
+      tags: [Autenticação]
+      operationId: logout
+      summary: Terminar sessão
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      responses:
+        '204': { description: Sessão terminada e cookie invalidado. }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /auth/me:
+    get:
+      tags: [Autenticação]
+      operationId: getCurrentUser
+      summary: Consultar utilizador autenticado e espaços associados
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Perfil e pertenças do utilizador autenticado.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user, workspaces]
+                properties:
+                  user: { $ref: '#/components/schemas/User' }
+                  workspaces:
+                    type: array
+                    items: { $ref: '#/components/schemas/WorkspaceMembership' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /workspaces:
+    get:
+      tags: [Espaços]
+      operationId: listWorkspaces
+      summary: Listar espaços a que o utilizador pertence
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Espaços autorizados.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/WorkspaceMembership' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /dashboard:
+    get:
+      tags: [Projetos]
+      operationId: getDashboard
+      summary: Consultar projetos acessíveis e contagens de tarefas por estado
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Resumo calculado sobre os projetos autorizados.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [projects]
+                properties:
+                  projects:
+                    type: array
+                    items: { $ref: '#/components/schemas/DashboardProject' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /workspaces/{workspaceId}/projects:
+    parameters:
+      - $ref: '#/components/parameters/WorkspaceId'
+    get:
+      tags: [Projetos]
+      operationId: listProjects
+      summary: Listar e pesquisar projetos do espaço
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: search
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Projetos paginados.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ProjectList' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [Projetos]
+      operationId: createProject
+      summary: Criar projeto (administrador do espaço)
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+              schema: { $ref: '#/components/schemas/ProjectCreateRequest' }
+      responses:
+        '201':
+          description: Projeto criado; criador derivado da sessão.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Project' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /projects/{projectId}:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+    get:
+      tags: [Projetos]
+      operationId: getProject
+      summary: Consultar projeto acessível
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Projeto encontrado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Project' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Projetos]
+      operationId: updateProject
+      summary: Atualizar projeto (administrador do espaço)
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProjectUpdateRequest' }
+      responses:
+        '200':
+          description: Projeto atualizado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Project' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [Projetos]
+      operationId: deleteProject
+      summary: Eliminar projeto e dados dependentes (administrador do espaço)
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      responses:
+        '204': { description: Projeto, tarefas, atribuições e comentários eliminados. }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /projects/{projectId}/members:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+    get:
+      tags: [Projetos]
+      operationId: listProjectMembers
+      summary: Listar membros elegíveis para atribuição
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Membros do mesmo espaço do projeto.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/WorkspaceMember' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /projects/{projectId}/tasks:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+    get:
+      tags: [Tarefas]
+      operationId: listProjectTasks
+      summary: Listar tarefas com filtros e paginação
+      security:
+        - sessionCookie: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/TaskStatus' }
+        - name: priority
+          in: query
+          schema: { $ref: '#/components/schemas/TaskPriority' }
+      responses:
+        '200':
+          description: Tarefas filtradas e paginadas; total corresponde ao filtro completo.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TaskList' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    post:
+      tags: [Tarefas]
+      operationId: createTask
+      summary: Criar tarefa num projeto acessível
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskCreateRequest' }
+      responses:
+        '201':
+          description: Tarefa criada com estado TODO e prioridade MEDIUM por omissão.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+  /projects/{projectId}/tasks/summary:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+    get:
+      tags: [Tarefas]
+      operationId: getProjectTaskSummary
+      summary: Consultar contagens completas e progresso do projeto
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Contagens não limitadas à página atual.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TaskSummary' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /tasks/{taskId}:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+    get:
+      tags: [Tarefas]
+      operationId: getTask
+      summary: Consultar tarefa acessível
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Tarefa encontrada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Tarefas]
+      operationId: updateTask
+      summary: Atualizar tarefa acessível
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TaskUpdateRequest' }
+      responses:
+        '200':
+          description: Tarefa atualizada.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Task' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [Tarefas]
+      operationId: deleteTask
+      summary: Eliminar tarefa e dados dependentes
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      responses:
+        '204': { description: Tarefa e comentários/atribuições eliminados. }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /tasks/{taskId}/assignments:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+    get:
+      tags: [Tarefas]
+      operationId: listTaskAssignments
+      summary: Listar responsáveis de uma tarefa
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Responsáveis atribuídos.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/User' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /tasks/{taskId}/assignments/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+      - name: userId
+        in: path
+        required: true
+        schema: { $ref: '#/components/schemas/Identifier' }
+    put:
+      tags: [Tarefas]
+      operationId: assignUserToTask
+      summary: Atribuir membro elegível (idempotente)
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      responses:
+        '200': { description: A atribuição já existia. }
+        '201': { description: Atribuição criada. }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    delete:
+      tags: [Tarefas]
+      operationId: unassignUserFromTask
+      summary: Remover responsável
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      responses:
+        '204': { description: Atribuição removida ou já inexistente. }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+  /tasks/{taskId}/comments:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+    get:
+      tags: [Comentários]
+      operationId: listTaskComments
+      summary: Listar comentários de uma tarefa
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Comentários ordenados por data.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Comment' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [Comentários]
+      operationId: createTaskComment
+      summary: Adicionar comentário; autor derivado da sessão
+      security:
+        - sessionCookie: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [content]
+              properties:
+                content: { type: string, minLength: 1, maxLength: 2000 }
+      responses:
+        '201':
+          description: Comentário criado pelo utilizador autenticado.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Comment' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: session
+      description: Cookie de sessão assinado pelo Flask e marcado HttpOnly.
+    csrfToken:
+      type: apiKey
+      in: header
+      name: X-CSRF-Token
+      description: Token devolvido por GET /auth/csrf ou pelo início de sessão.
+  parameters:
+    WorkspaceId:
+      name: workspaceId
+      in: path
+      required: true
+      schema: { $ref: '#/components/schemas/Identifier' }
+    ProjectId:
+      name: projectId
+      in: path
+      required: true
+      schema: { $ref: '#/components/schemas/Identifier' }
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      schema: { $ref: '#/components/schemas/Identifier' }
+    Page:
+      name: page
+      in: query
+      schema: { type: integer, minimum: 1, default: 1 }
+    PageSize:
+      name: pageSize
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 50 }
+  schemas:
+    Identifier:
+      type: integer
+      minimum: 1
+    User:
+      type: object
+      required: [id, username, name, email]
+      properties:
+        id: { $ref: '#/components/schemas/Identifier' }
+        username: { type: string }
+        name: { type: string }
+        email: { type: string, format: email }
+    WorkspaceMembership:
+      type: object
+      required: [id, name, role]
+      properties:
+        id: { $ref: '#/components/schemas/Identifier' }
+        name: { type: string }
+        role: { type: string, enum: [admin, member] }
+    WorkspaceMember:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          required: [role]
+          properties:
+            role: { type: string, enum: [admin, member] }
+    ProjectInput:
+      type: object
+      additionalProperties: false
+      properties:
+        name: { type: string, minLength: 3, maxLength: 100 }
+        description: { type: string, maxLength: 1000 }
+    ProjectCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/ProjectInput'
+        - type: object
+          required: [name]
+    ProjectUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/ProjectInput'
+        - type: object
+          minProperties: 1
+    Project:
+      type: object
+      required: [id, workspaceId, name, description, createdAt, updatedAt]
+      properties:
+        id: { $ref: '#/components/schemas/Identifier' }
+        workspaceId: { $ref: '#/components/schemas/Identifier' }
+        name: { type: string }
+        description: { type: string }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    ProjectList:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Project' }
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+    TaskStatus:
+      type: string
+      enum: [TODO, IN_PROGRESS, DONE]
+    TaskPriority:
+      type: string
+      enum: [LOW, MEDIUM, HIGH]
+    TaskInput:
+      type: object
+      additionalProperties: false
+      properties:
+        title: { type: string, minLength: 3, maxLength: 150 }
+        description: { type: string, maxLength: 2000 }
+        status: { $ref: '#/components/schemas/TaskStatus' }
+        priority: { $ref: '#/components/schemas/TaskPriority' }
+        dueDate:
+          type: [string, 'null']
+          format: date
+    TaskCreateRequest:
+      allOf:
+        - $ref: '#/components/schemas/TaskInput'
+        - type: object
+          required: [title]
+    TaskUpdateRequest:
+      allOf:
+        - $ref: '#/components/schemas/TaskInput'
+        - type: object
+          minProperties: 1
+    Task:
+      type: object
+      required: [id, workspaceId, projectId, title, description, status, priority, assignees]
+      properties:
+        id: { $ref: '#/components/schemas/Identifier' }
+        workspaceId: { $ref: '#/components/schemas/Identifier' }
+        projectId: { $ref: '#/components/schemas/Identifier' }
+        title: { type: string }
+        description: { type: string }
+        status: { $ref: '#/components/schemas/TaskStatus' }
+        priority: { $ref: '#/components/schemas/TaskPriority' }
+        dueDate: { type: [string, 'null'], format: date }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        assignees:
+          type: array
+          items: { $ref: '#/components/schemas/User' }
+    TaskList:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Task' }
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+    TaskSummary:
+      type: object
+      required: [total, counts]
+      properties:
+        total: { type: integer, minimum: 0 }
+        counts:
+          type: object
+          required: [TODO, IN_PROGRESS, DONE]
+          properties:
+            TODO: { type: integer, minimum: 0 }
+            IN_PROGRESS: { type: integer, minimum: 0 }
+            DONE: { type: integer, minimum: 0 }
+    DashboardProject:
+      type: object
+      required: [id, workspaceId, name, description, taskCount, counts]
+      properties:
+        id: { $ref: '#/components/schemas/Identifier' }
+        workspaceId: { $ref: '#/components/schemas/Identifier' }
+        name: { type: string }
+        description: { type: string }
+        taskCount: { type: integer, minimum: 0 }
+        counts:
+          type: object
+          required: [TODO, IN_PROGRESS, DONE]
+          properties:
+            TODO: { type: integer, minimum: 0 }
+            IN_PROGRESS: { type: integer, minimum: 0 }
+            DONE: { type: integer, minimum: 0 }
+    Comment:
+      type: object
+      required: [id, taskId, content, createdAt, author]
+      properties:
+        id: { $ref: '#/components/schemas/Identifier' }
+        taskId: { $ref: '#/components/schemas/Identifier' }
+        content: { type: string, minLength: 1, maxLength: 2000 }
+        createdAt: { type: string, format: date-time }
+        author:
+          type: object
+          required: [id, name]
+          properties:
+            id: { $ref: '#/components/schemas/Identifier' }
+            name: { type: string }
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: { type: string }
+            message: { type: string }
+  responses:
+    BadRequest:
+      description: Pedido malformado, CSRF ausente ou inválido.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Sessão ausente, expirada ou credenciais inválidas.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Utilizador autenticado sem papel para a operação.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Recurso inexistente ou não acessível.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    ValidationError:
+      description: Dados inválidos.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
