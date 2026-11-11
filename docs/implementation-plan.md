@@ -34,3 +34,14 @@
 - `tests/`: testes de validação, autorização e round-trip de persistência.
 
 Este plano autoriza a implementação incremental da atividade. Não autoriza remover a separação por workspace nem introduzir credenciais reais.
+
+## Ficha 05 — Entrega reproduzível
+
+| Estado | Incremento | Critérios e verificação |
+|---|---|---|
+| Concluído | 1. Container e Compose | Imagem Flask sem segredos, serviço acessível em loopback, healthcheck e volume SQLite. `docker compose config -q`, build, health e persistência após recriação verificados localmente. |
+| Concluído | 2. Integração contínua | Workflow para push/PR com permissões `contents: read`, testes, JavaScript e build Docker. YAML parseado localmente; execução remota no GitHub pendente de push/PR. |
+| Concluído | 3. Documentação e versão candidata | README, diagrama Mermaid, changelog e notas de `0.1.0-rc.1` preparados; não foi publicada release. |
+| Concluído | 4. Validação e troubleshooting | 22 testes unitários/de integração e 1 E2E passaram; API containerizada e persistência verificadas. O daemon de validação foi iniciado localmente e a stack de teste foi parada sem remover o volume. |
+
+Esta entrega é académica e local. O servidor de desenvolvimento do Flask não é adequado para produção; a pipeline não foi executada remotamente por não ter sido feito push.

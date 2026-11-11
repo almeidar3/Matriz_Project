@@ -36,13 +36,16 @@ Os detalhes, pressupostos, prioridades e critérios de aceitação estão em [`d
 - [`docs/verification.md`](docs/verification.md): evidência dos testes e verificações.
 - [`docs/test-plan.md`](docs/test-plan.md): plano e resultados de testes da Ficha 04.
 - [`docs/quality-security-review.md`](docs/quality-security-review.md): revisão de qualidade e segurança da Ficha 04.
+- [`CHANGELOG.md`](CHANGELOG.md): histórico de alterações e versão candidata.
+- [`docs/releases/v0.1.0-rc.1.md`](docs/releases/v0.1.0-rc.1.md): notas da versão candidata.
+- [`.github/workflows/ci.yml`](.github/workflows/ci.yml): verificações automatizadas em push e pull request.
 - [`openapi.yaml`](openapi.yaml): contrato REST simplificado com duas operações.
 - [`docs/ui/wireframe.svg`](docs/ui/wireframe.svg): wireframe de baixa fidelidade do projeto.
 - [`AGENTS.md`](AGENTS.md): instruções persistentes para agentes de desenvolvimento.
 
 ## Executar localmente
 
-Requisitos: Python 3.11 ou superior.
+Requisitos: Python 3.11 ou superior para a aplicação e testes; Node.js para a verificação de JavaScript; Docker Desktop com o plugin Compose para a execução containerizada.
 
 ```sh
 python3 -m venv .venv
@@ -68,6 +71,28 @@ Abre `http://127.0.0.1:5000`. O seed é idempotente e nunca limpa a base de dado
 | `ana` | `Matriz-demo-ana-2026` | Equipa Produto | Administrador |
 | `bruno` | `Matriz-demo-bruno-2026` | Equipa Produto | Membro |
 | `ines` | `Matriz-demo-ines-2026` | Equipa Design | Administrador |
+
+## Docker Compose (local)
+
+Requisitos: Docker Desktop com o plugin Docker Compose. O container é para o exercício local e não representa uma configuração de produção.
+
+```sh
+cp .env.example .env
+python -c 'import secrets; print(secrets.token_urlsafe(32))'
+```
+
+Substitui o valor de exemplo de `MATRIX_SECRET_KEY` no `.env` local pelo valor gerado. O `.env` está ignorado pelo Git. Depois, constrói e inicia a aplicação:
+
+```sh
+docker compose config -q
+docker compose build
+docker compose up -d
+docker compose ps
+docker compose logs --tail=50
+docker compose exec web flask --app app seed-demo
+```
+
+Abre `http://127.0.0.1:5000`. Os dados SQLite ficam no volume Docker `matriz_data`; `docker compose down` remove o container sem apagar esse volume. `docker compose down -v` apaga também os dados persistentes.
 
 ## Verificação
 

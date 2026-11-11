@@ -35,3 +35,35 @@ Resultado: 10 testes automatizados passaram. `node --check static/app.js` não r
 | Rever a implementação de autoria/atribuições. | Rejeitar identidade enviada pelo cliente; autor vem da sessão; atribuição é idempotente. | Teste de payload forjado, membro de outro espaço e pedido duplicado. |
 
 Um primeiro teste esperava `username` no objeto `author`; o contrato expõe `id` e `name`. A expectativa foi corrigida para validar a resposta definida pela API, sem alterar a regra de autoria.
+
+## Ficha 05 — Docker, CI e release candidate
+
+### Análise e preparação
+
+- Componentes: `app.py` cria a aplicação Flask; `auth.py`, `projects.py` e `tasks.py` implementam identidade e API; `templates/` e `static/` servem a interface; `db.py` inicializa e acede à base SQLite; `openapi.yaml` documenta a API.
+- Dependência de execução: Flask, declarado em `requirements.txt`. Testes usam `unittest`; o E2E usa Playwright, separado em `requirements-test.txt`.
+- Serviços externos em runtime: nenhum. O build Docker descarrega a imagem base Python; a pipeline usa GitHub Actions quando executada no GitHub.
+- Configuração: `MATRIX_SECRET_KEY` e `MATRIX_COOKIE_SECURE` para a aplicação; Compose acrescenta `MATRIX_PORT`. A chave local é fornecida pelo utilizador, enquanto o workflow gera uma chave efémera.
+- Persistência: SQLite em `instance/`; o Compose monta essa pasta num volume nomeado. Os testes automatizados usam bases temporárias isoladas.
+- O seed contém contas fictícias para demonstração; não são credenciais de produção. Não foi encontrado ficheiro `.env` real nem chave privada versionada.
+
+### Verificações locais
+
+- `docker compose config -q`: passou com uma chave temporária gerada localmente.
+- `docker compose -p matriz-ficha5 build`: imagem `matriz-ficha5-web` construída com sucesso.
+- `docker compose -p matriz-ficha5 up -d --wait`: serviço `web` ficou `healthy`; `/api/health` devolveu `{"status":"ok"}`.
+- Seed fictício executado no container; a base tinha 2 projetos antes e depois de `down`/`up`, confirmando persistência do volume `matriz-ficha5_matriz_data`.
+- Smoke test HTTP contra o container: login 200, criar tarefa 201, consultar 200 e remover 204.
+- Logs sem erros críticos. O Flask indica que está a usar o servidor de desenvolvimento; é esperado para esta configuração académica e não adequada para produção.
+- Inspeção das variáveis da imagem confirmou que `MATRIX_SECRET_KEY` não está embutida. A varredura de caminhos versionados não encontrou `.env` real nem chaves privadas.
+- Workflow `.github/workflows/ci.yml` parseado como YAML. `actionlint` não está instalado; a pipeline não foi executada no GitHub porque não foi feito push nem criada uma pull request.
+
+### Versão candidata
+
+Foi preparada a documentação `0.1.0-rc.1` em `CHANGELOG.md` e `docs/releases/v0.1.0-rc.1.md`. Não foi criada tag nem publicada release ou imagem.
+
+### Limitações
+
+- A pipeline remota continua por verificar no GitHub Actions; a validação local do YAML não substitui essa execução.
+- A stack foi iniciada para os testes e parada com `docker compose down`, preservando intencionalmente o volume de validação. Não executar `docker compose down -v` sem intenção explícita de apagar os dados.
+- A configuração usa o servidor de desenvolvimento Flask e destina-se apenas ao exercício local.

@@ -19,6 +19,20 @@ Usar um **monólito modular** como ponto de partida. Projetos, tarefas e perten�
 
 Para a Ficha 03, a implementação usa Flask para HTTP, sessões e templates, SQLite para persistência e JavaScript nativo para atualizar dados pela API. Isto evita um segundo runtime e um serviço de base de dados para o exercício. A configuração é local e não deve ser interpretada como arquitetura de produção.
 
+## Execução local com Docker — Ficha 05
+
+A Ficha 05 acrescenta uma forma reproduzível de executar o mesmo monólito Flask com Docker Compose. O serviço `web` serve a interface e a API; a base SQLite continua embutida na aplicação e persiste num volume nomeado. Não é introduzido um serviço de base de dados externo. O Compose publica a aplicação apenas em `127.0.0.1` e verifica `/api/health`.
+
+```mermaid
+flowchart LR
+	browser[Browser local] -->|HTTP 127.0.0.1:5000| web[Flask no container web]
+	web -->|SQLite| data[(Volume matriz_data)]
+	github[GitHub Actions] --> checks[Testes Python, E2E e JavaScript]
+	checks --> image[Build da imagem Docker]
+```
+
+O container usa o servidor de desenvolvimento do Flask por simplicidade académica; não deve ser exposto como serviço de produção. `MATRIX_SECRET_KEY` é fornecida pelo ambiente, nunca embutida na imagem. O healthcheck confirma que o processo consegue responder à rota de saúde, não que todas as funcionalidades estejam operacionais.
+
 ## Componentes e responsabilidades
 
 - **Interface web:** apresenta autenticação, painel, projetos, tarefas, responsáveis e comentários; recolhe ações do utilizador. Não é fronteira de autorização.
