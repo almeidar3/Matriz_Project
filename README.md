@@ -69,9 +69,11 @@ Abre `http://127.0.0.1:5000`. O seed é idempotente e nunca limpa a base de dado
 
 | Utilizador | Palavra-passe | Espaço | Papel |
 |---|---|---|---|
-| `ana` | `Matriz-demo-ana-2026` | Equipa Produto | Administrador |
+| `ana` | `Matriz-demo-ana-2026` | Produto, Recursos Humanos e Marketing | Administradora |
 | `bruno` | `Matriz-demo-bruno-2026` | Equipa Produto | Membro |
 | `ines` | `Matriz-demo-ines-2026` | Equipa Design | Administrador |
+
+Recursos Humanos e Marketing são espaços de demonstração sem projetos iniciais; a Ana pode selecioná-los e criar projetos. A dashboard resume apenas a equipa selecionada, com total, a fazer, em curso, concluídas e percentagem concluída. Estas equipas são dados fictícios da atividade, não uma função de criação dinâmica de equipas.
 
 ## Docker Compose (local)
 

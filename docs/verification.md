@@ -70,4 +70,12 @@ Foi preparada a documentação `0.1.0-rc.1` em `CHANGELOG.md` e `docs/releases/v
 - A pipeline remota continua por verificar no GitHub Actions; a validação local do YAML não substitui essa execução.
 - O serviço Render ainda não foi criado; é necessário ligar o repositório no dashboard e aguardar o deploy/checks. O free service tem filesystem efémero; a demo usa dados fictícios públicos e não deve receber dados reais.
 - A stack foi iniciada para os testes e parada com `docker compose down`, preservando intencionalmente o volume de validação. Não executar `docker compose down -v` sem intenção explícita de apagar os dados.
-- A configuração usa o servidor de desenvolvimento Flask e destina-se apenas ao exercício local.
+- O container usa Gunicorn, mas a aplicação e a configuração continuam académicas e não certificadas para produção.
+
+## Extensão de dashboard e equipas de demonstração
+
+- Suite completa após a extensão: 23 testes unitários/de integração passaram; 2 testes E2E passaram.
+- Seed repetido confirmou memberships idempotentes. Ana seleciona Produto, Recursos Humanos e Marketing; Bruno continua limitado a Produto e Inês a Design.
+- A dashboard filtrou métricas pelo workspace selecionado. No Produto, concluir uma tarefa atualizou o progresso de 0% para 50%; RH e Marketing mostraram 0 tarefas e 0%.
+- E2E confirmou a navegação entre workspaces em desktop e viewport de 390 px, sem overflow horizontal.
+- A criação dinâmica de workspaces e gestão de membros não foram implementadas; RH/Marketing são espaços fictícios sem projetos iniciais.

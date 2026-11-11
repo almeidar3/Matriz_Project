@@ -45,4 +45,14 @@ Este plano autoriza a implementação incremental da atividade. Não autoriza re
 | Concluído | 4. Documentação e versão candidata | README, diagrama Mermaid, changelog e notas de `0.1.0-rc.1` preparados; não foi publicada release. |
 | Concluído | 5. Validação e troubleshooting | 22 testes unitários/de integração e 1 E2E passaram; API containerizada e persistência verificadas. O daemon de validação foi iniciado localmente e a stack de teste foi parada sem remover o volume. |
 
-Esta entrega é académica e local. O servidor de desenvolvimento do Flask não é adequado para produção; a pipeline não foi executada remotamente por não ter sido feito push.
+Esta entrega é académica. A pipeline não foi executada remotamente por não ter sido feito push.
+
+## Extensão de demonstração — equipas e dashboard
+
+| Estado | Incremento | Critérios e verificação |
+|---|---|---|
+| Concluído | Seed multi-workspace | Ana tem memberships admin em Produto, Recursos Humanos e Marketing; Bruno e Inês mantêm os espaços existentes. Seed repetido não duplica memberships. |
+| Concluído | Dashboard por equipa selecionada | Apresenta percentagem concluída, total e cartões de estados; seleção de workspace atualiza dados e empty state sem cruzar contagens. |
+| Concluído | Interface responsiva | E2E validou troca de equipa, progresso 0%/50% e ausência de overflow horizontal a 390 px. |
+
+Esta extensão adiciona apenas workspaces fictícios predefinidos; não implementa criação dinâmica de equipas nem gestão de memberships.

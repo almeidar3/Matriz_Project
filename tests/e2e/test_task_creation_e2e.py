@@ -62,6 +62,45 @@ class TaskCreationE2ETests(unittest.TestCase):
         else:
             self.context.tracing.stop()
 
+    def test_dashboard_progress_updates_and_switches_between_demo_workspaces(self):
+        demo_user = next(user for user in DEMO_USERS if user["username"] == "ana")
+        self.page.set_viewport_size({"width": 1440, "height": 1000})
+        self.page.goto(self.base_url)
+        self.page.locator("#username").fill(demo_user["username"])
+        self.page.locator("#password").fill(demo_user["password"])
+        self.page.locator('#login-form button[type="submit"]').click()
+
+        expect(self.page.locator("#dashboard-workspace-name")).to_have_text("Equipa Produto")
+        expect(self.page.locator("#dashboard-total")).to_have_text("2")
+        expect(self.page.locator("#dashboard-progress")).to_have_text("0%")
+        expect(self.page.locator('[data-dashboard-status="TODO"] .status-value')).to_have_text("1")
+        expect(self.page.locator('[data-dashboard-status="IN_PROGRESS"] .status-value')).to_have_text("1")
+        expect(self.page.locator('[data-dashboard-status="DONE"] .status-value')).to_have_text("0")
+
+        self.page.locator("#project-nav [data-project-id='1']").click()
+        task = self.page.locator(".task-card").filter(
+            has=self.page.get_by_role("heading", name="Rever requisitos")
+        )
+        task.locator('[data-task-field="status"]').select_option("DONE")
+        expect(self.page.locator("#toast")).to_have_text("Tarefa atualizada.")
+        self.page.locator("#home-open").click()
+        expect(self.page.locator("#dashboard-progress")).to_have_text("50%")
+        expect(self.page.locator('[data-dashboard-status="DONE"] .status-value')).to_have_text("1")
+
+        workspace_select = self.page.locator("#workspace-select")
+        for workspace_name in ("Recursos Humanos", "Marketing"):
+            workspace_select.select_option(label=workspace_name)
+            expect(self.page.locator("#dashboard-workspace-name")).to_have_text(workspace_name)
+            expect(self.page.locator("#dashboard-total")).to_have_text("0")
+            expect(self.page.locator("#dashboard-progress")).to_have_text("0%")
+
+        self.page.set_viewport_size({"width": 390, "height": 844})
+        expect(self.page.locator("#dashboard-workspace-name")).to_have_text("Marketing")
+        self.assertLessEqual(
+            self.page.evaluate("document.body.scrollWidth"),
+            self.page.evaluate("window.innerWidth"),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

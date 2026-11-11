@@ -39,6 +39,45 @@ class MatrixApiTests(unittest.TestCase):
     def _headers(self):
         return {"X-CSRF-Token": self.csrf_token}
 
+    def test_demo_workspaces_are_idempotent_and_isolated_by_membership(self):
+        def memberships_for(username, password):
+            client = self.app.test_client()
+            token = client.get("/api/auth/csrf").get_json()["csrfToken"]
+            login = client.post(
+                "/api/auth/login",
+                json={"username": username, "password": password},
+                headers={"X-CSRF-Token": token},
+            )
+            self.assertEqual(login.status_code, 200)
+            profile = client.get("/api/auth/me")
+            self.assertEqual(profile.status_code, 200)
+            return {
+                workspace["name"]: workspace["role"]
+                for workspace in profile.get_json()["workspaces"]
+            }
+
+        ana_memberships = memberships_for("ana", "Matriz-demo-ana-2026")
+        self.assertEqual(ana_memberships, {
+            "Equipa Produto": "admin",
+            "Recursos Humanos": "admin",
+            "Marketing": "admin",
+        })
+        self.assertEqual(
+            memberships_for("bruno", "Matriz-demo-bruno-2026"),
+            {"Equipa Produto": "member"},
+        )
+        self.assertEqual(
+            memberships_for("ines", "Matriz-demo-ines-2026"),
+            {"Equipa Design": "admin"},
+        )
+
+        with self.app.app_context():
+            seed_demo()
+        self.assertEqual(
+            memberships_for("ana", "Matriz-demo-ana-2026"),
+            ana_memberships,
+        )
+
     def test_invalid_task_title_is_rejected(self):
         response = self.client.post(
             "/api/projects/1/tasks",

@@ -241,17 +241,29 @@ function renderProjectNav() {
 
 function renderHome() {
   const projects = state.dashboard.filter((project) => project.workspaceId === Number(state.workspaceId));
+  const workspace = state.workspaces.find((item) => item.id === Number(state.workspaceId));
   const counts = projects.reduce((total, project) => ({
     tasks: total.tasks + project.taskCount,
     TODO: total.TODO + project.counts.TODO,
     IN_PROGRESS: total.IN_PROGRESS + project.counts.IN_PROGRESS,
     DONE: total.DONE + project.counts.DONE,
   }), { tasks: 0, TODO: 0, IN_PROGRESS: 0, DONE: 0 });
+  const completion = counts.tasks ? Math.round(counts.DONE / counts.tasks * 100) : 0;
+  const progressWidth = (count) => counts.tasks ? count / counts.tasks * 100 : 0;
   elements["breadcrumb"].textContent = "Painel inicial";
   elements["main-content"].innerHTML = `
-    <div class="page-heading"><div><p class="eyebrow">VISÃO GERAL</p><h1>Bom dia, ${escapeHtml(state.user.name.split(" ")[0])}</h1><p class="muted">Acompanhe o trabalho deste espaço.</p></div><button class="button button-primary" data-action="new-project" ${currentRole() !== "admin" ? "hidden" : ""}>+ Novo projeto</button></div>
-    <section class="metric-grid" aria-label="Resumo das tarefas">
-      ${metric("Tarefas", counts.tasks, "no total")}${metric("A fazer", counts.TODO, "por iniciar")}${metric("Em curso", counts.IN_PROGRESS, "em andamento")}${metric("Concluídas", counts.DONE, "finalizadas")}
+    <div class="page-heading"><div><p class="eyebrow">DASHBOARD · <span id="dashboard-workspace-name">${escapeHtml(workspace?.name || "Equipa")}</span></p><h1>Bom dia, ${escapeHtml(state.user.name.split(" ")[0])}</h1><p class="muted">Resumo do trabalho e progresso da equipa selecionada.</p></div><button class="button button-primary" data-action="new-project" ${currentRole() !== "admin" ? "hidden" : ""}>+ Novo projeto</button></div>
+    <section class="dashboard-overview" aria-label="Progresso e estado das tarefas">
+      <article class="completion-panel">
+        <div class="completion-heading"><div><p class="eyebrow">PROGRESSO CONCLUÍDO</p><strong id="dashboard-progress">${completion}%</strong></div><div class="completion-total"><strong id="dashboard-total">${counts.tasks}</strong><span>tarefas</span></div></div>
+        <div class="progress-track" role="img" aria-label="${counts.TODO} a fazer, ${counts.IN_PROGRESS} em curso, ${counts.DONE} concluídas"><span class="progress-todo" style="width:${progressWidth(counts.TODO)}%"></span><span class="progress-active" style="width:${progressWidth(counts.IN_PROGRESS)}%"></span><span class="progress-done" style="width:${progressWidth(counts.DONE)}%"></span></div>
+        <p class="completion-note">${counts.DONE} de ${counts.tasks} tarefas concluídas</p>
+      </article>
+      <div class="status-grid" aria-label="Tarefas por estado">
+        ${statusCard("TODO", "A fazer", counts.TODO, "Por iniciar")}
+        ${statusCard("IN_PROGRESS", "Em curso", counts.IN_PROGRESS, "Em andamento")}
+        ${statusCard("DONE", "Concluídas", counts.DONE, "Finalizadas")}
+      </div>
     </section>
     <div class="section-heading"><div><h2>Projetos</h2><p class="muted">${projects.length} ${projects.length === 1 ? "projeto" : "projetos"} neste espaço</p></div><label class="search-field"><span class="search-symbol">⌕</span><input id="project-search" type="search" placeholder="Pesquisar projetos" aria-label="Pesquisar projetos"></label></div>
     <section id="project-grid" class="project-grid">${projectCards(projects)}</section>`;
@@ -262,8 +274,13 @@ function renderHome() {
   });
 }
 
-function metric(title, value, note) {
-  return `<article class="metric"><span class="metric-label">${title}</span><strong>${value}</strong><span class="metric-note">${note}</span></article>`;
+function statusCard(status, title, value, note) {
+  const statusClass = {
+    TODO: "dashboard-todo",
+    IN_PROGRESS: "dashboard-in-progress",
+    DONE: "dashboard-done",
+  }[status];
+  return `<article class="status-card ${statusClass}" data-dashboard-status="${status}"><div class="status-card-heading"><span class="status-mark" aria-hidden="true"></span><span>${title}</span></div><strong class="status-value">${value}</strong><span class="status-note">${note}</span></article>`;
 }
 
 function projectCards(projects) {

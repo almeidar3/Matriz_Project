@@ -47,6 +47,12 @@ Na API, `TODO`, `IN_PROGRESS` e `DONE` são os valores persistidos. A interface 
 
 Para a implementação académica da Ficha 03, RF-12 amplia RF-04: em vez de no máximo um responsável opcional, uma tarefa pode ter vários membros do mesmo espaço. A regra original permanece registada como proposta da Ficha 02; a ampliação também não está validada pelo cliente.
 
+## Extensão académica de demonstração — dashboard multi-equipa
+
+A pedido do utilizador para a demo da aplicação, a conta demonstrativa Ana recebe memberships de administradora em `Recursos Humanos` e `Marketing`, além de `Equipa Produto`. A conta Bruno continua apenas em Produto e Inês apenas em Design. Não foi adicionada criação dinâmica de workspaces nem alteração de memberships pela interface.
+
+A dashboard resume os projetos e tarefas do workspace selecionado: total, `TODO`, `IN_PROGRESS`, `DONE` e percentagem `DONE / total`, com 0% quando não há tarefas. Esta extensão é específica da demonstração académica e não representa um requisito confirmado pelo cliente.
+
 ## Requisitos não funcionais propostos
 
 Estes requisitos carecem de confirmação e de critérios técnicos na fase seguinte:

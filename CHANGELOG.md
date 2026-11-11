@@ -6,6 +6,7 @@ Primeira versão candidata académica do Matriz. Ainda não publicada.
 
 ### Adicionado
 
+- Dashboard responsiva com progresso e contagens por estado para a equipa selecionada; workspaces fictícios de Recursos Humanos e Marketing na demo.
 - Imagem Docker e execução local através de Docker Compose com volume SQLite persistente e healthcheck.
 - Pipeline GitHub Actions para testes, verificações frontend e build da imagem.
 - Blueprint Render para uma demo pública com segredo gerado, cookies seguros e seed fictício.
@@ -13,4 +14,4 @@ Primeira versão candidata académica do Matriz. Ainda não publicada.
 
 ### Validação
 
-- A validação local de containers depende de um daemon Docker ativo; consultar `docs/verification.md` para o resultado observado.
+- Build e smoke tests Docker foram executados localmente; consultar `docs/verification.md` para os resultados observados.

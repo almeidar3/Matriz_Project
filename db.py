@@ -119,6 +119,8 @@ DEMO_USERS = (
     },
 )
 
+DEMO_ADDITIONAL_WORKSPACES = ("Recursos Humanos", "Marketing")
+
 
 def get_db():
     if "db" not in g:
@@ -259,14 +261,28 @@ def seed_demo():
             (workspace["id"], user["id"], demo_user["role"]),
         )
 
+    ana_id = connection.execute(
+        "SELECT id FROM user_account WHERE username = 'ana'"
+    ).fetchone()["id"]
+    for workspace_name in DEMO_ADDITIONAL_WORKSPACES:
+        connection.execute(
+            "INSERT OR IGNORE INTO workspace (name) VALUES (?)",
+            (workspace_name,),
+        )
+        workspace = connection.execute(
+            "SELECT id FROM workspace WHERE name = ?",
+            (workspace_name,),
+        ).fetchone()
+        connection.execute(
+            "INSERT OR IGNORE INTO workspace_member (workspace_id, user_id, role) VALUES (?, ?, 'admin')",
+            (workspace["id"], ana_id),
+        )
+
     product_workspace = connection.execute(
         "SELECT id FROM workspace WHERE name = 'Equipa Produto'"
     ).fetchone()["id"]
     design_workspace = connection.execute(
         "SELECT id FROM workspace WHERE name = 'Equipa Design'"
-    ).fetchone()["id"]
-    ana_id = connection.execute(
-        "SELECT id FROM user_account WHERE username = 'ana'"
     ).fetchone()["id"]
     ines_id = connection.execute(
         "SELECT id FROM user_account WHERE username = 'ines'"
