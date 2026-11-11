@@ -2,6 +2,7 @@
 
 ## Contexto obrigatório
 
+- Em cada pedido, verifique `../Prompts/` e `../fichas/` antes de planear ou alterar o projeto; consulte os prompts e as fichas relevantes para a tarefa. Se o pedido indicar uma ficha, leia essa ficha e o prompt correspondente antes de avançar.
 - Antes de planear ou alterar o projeto, consulte `README.md` e a documentação relevante em `docs/`.
 - Trate `docs/requirements.md`, `docs/user-stories.md` e `docs/constraints.md` como a especificação atual; verifique se uma decisão está aprovada ou apenas assumida.
 - Para esta entrega, o plano incremental está em `docs/implementation-plan.md`; atualize-o quando concluir ou alterar um incremento.

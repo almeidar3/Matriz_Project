@@ -34,6 +34,8 @@ Os detalhes, pressupostos, prioridades e critérios de aceitação estão em [`d
 - [`docs/database.md`](docs/database.md): modelo de dados e diagrama ER em Mermaid.
 - [`docs/implementation-plan.md`](docs/implementation-plan.md): incrementos e critérios da Ficha 03.
 - [`docs/verification.md`](docs/verification.md): evidência dos testes e verificações.
+- [`docs/test-plan.md`](docs/test-plan.md): plano e resultados de testes da Ficha 04.
+- [`docs/quality-security-review.md`](docs/quality-security-review.md): revisão de qualidade e segurança da Ficha 04.
 - [`openapi.yaml`](openapi.yaml): contrato REST simplificado com duas operações.
 - [`docs/ui/wireframe.svg`](docs/ui/wireframe.svg): wireframe de baixa fidelidade do projeto.
 - [`AGENTS.md`](AGENTS.md): instruções persistentes para agentes de desenvolvimento.
@@ -70,8 +72,11 @@ Abre `http://127.0.0.1:5000`. O seed é idempotente e nunca limpa a base de dado
 ## Verificação
 
 ```sh
+python -m pip install -r requirements-test.txt
 python -m unittest discover -s tests -v
+python -m playwright install chromium
+python -m unittest discover -s tests/e2e -v
 node --check static/app.js
 ```
 
-O contrato REST está em [`openapi.yaml`](openapi.yaml); os resultados e limitações conhecidos estão em [`docs/verification.md`](docs/verification.md). Para regras de negócio, consultar [`docs/requirements.md`](docs/requirements.md) e [`docs/user-stories.md`](docs/user-stories.md). A stack e as funcionalidades são escolhas académicas da Ficha 03, não uma decisão validada para produção.
+O contrato REST está em [`openapi.yaml`](openapi.yaml); os resultados da Ficha 04 estão em [`docs/test-plan.md`](docs/test-plan.md) e [`docs/quality-security-review.md`](docs/quality-security-review.md). Para regras de negócio, consultar [`docs/requirements.md`](docs/requirements.md) e [`docs/user-stories.md`](docs/user-stories.md). A stack e as funcionalidades são escolhas académicas, não uma decisão validada para produção.
