@@ -5,6 +5,8 @@ services:
     environment:
       MATRIX_SECRET_KEY: ${MATRIX_SECRET_KEY:?Define MATRIX_SECRET_KEY in .env}
       MATRIX_COOKIE_SECURE: ${MATRIX_COOKIE_SECURE:-0}
+      MATRIX_SEED_DEMO: ${MATRIX_SEED_DEMO:-0}
+      PORT: "5000"
     ports:
       - "127.0.0.1:${MATRIX_PORT:-5000}:5000"
     volumes:

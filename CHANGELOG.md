@@ -8,6 +8,7 @@ Primeira versão candidata académica do Matriz. Ainda não publicada.
 
 - Imagem Docker e execução local através de Docker Compose com volume SQLite persistente e healthcheck.
 - Pipeline GitHub Actions para testes, verificações frontend e build da imagem.
+- Blueprint Render para uma demo pública com segredo gerado, cookies seguros e seed fictício.
 - Documentação de execução, arquitetura, validação e notas da versão candidata.
 
 ### Validação

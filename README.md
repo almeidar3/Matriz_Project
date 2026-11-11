@@ -39,6 +39,7 @@ Os detalhes, pressupostos, prioridades e critérios de aceitação estão em [`d
 - [`CHANGELOG.md`](CHANGELOG.md): histórico de alterações e versão candidata.
 - [`docs/releases/v0.1.0-rc.1.md`](docs/releases/v0.1.0-rc.1.md): notas da versão candidata.
 - [`.github/workflows/ci.yml`](.github/workflows/ci.yml): verificações automatizadas em push e pull request.
+- [`render.yaml`](render.yaml): Blueprint para demo pública no Render.
 - [`openapi.yaml`](openapi.yaml): contrato REST simplificado com duas operações.
 - [`docs/ui/wireframe.svg`](docs/ui/wireframe.svg): wireframe de baixa fidelidade do projeto.
 - [`AGENTS.md`](AGENTS.md): instruções persistentes para agentes de desenvolvimento.
@@ -74,7 +75,7 @@ Abre `http://127.0.0.1:5000`. O seed é idempotente e nunca limpa a base de dado
 
 ## Docker Compose (local)
 
-Requisitos: Docker Desktop com o plugin Docker Compose. O container é para o exercício local e não representa uma configuração de produção.
+Requisitos: Docker Desktop com o plugin Docker Compose. O container usa Gunicorn; a configuração e os dados de demonstração continuam a ser apenas para o exercício.
 
 ```sh
 cp .env.example .env
@@ -93,6 +94,12 @@ docker compose exec web flask --app app seed-demo
 ```
 
 Abre `http://127.0.0.1:5000`. Os dados SQLite ficam no volume Docker `matriz_data`; `docker compose down` remove o container sem apagar esse volume. `docker compose down -v` apaga também os dados persistentes.
+
+## Demo pública no Render
+
+O [`render.yaml`](render.yaml) define um web service gratuito em Frankfurt, construído a partir deste Dockerfile. Para o criar, envia as alterações para o GitHub, abre o Render Dashboard, escolhe **New > Blueprint**, liga o repositório Matriz e confirma a configuração apresentada. O deploy automático aguarda os checks do GitHub Actions.
+
+O Render gera `MATRIX_SECRET_KEY`, ativa cookies seguros e semeia contas/dados fictícios. A aplicação é pública: qualquer visitante pode iniciar sessão com as contas de demonstração documentadas acima e alterar os respetivos dados fictícios. O plano escolhido não configura disco persistente; os dados podem ser repostos ou perdidos ao reiniciar/recriar o serviço. Não uses esta demo para dados reais ou confidenciais. O URL `onrender.com` é apresentado no dashboard após o primeiro deploy.
 
 ## Verificação
 

@@ -16,6 +16,6 @@ COPY --chown=app:app templates ./templates
 COPY --chown=app:app static ./static
 
 USER app
-EXPOSE 5000
+EXPOSE 10000
 
-CMD ["flask", "--app", "app", "run", "--host=0.0.0.0", "--port=5000", "--no-debugger", "--no-reload"]
+CMD ["sh", "-c", "if [ \"${MATRIX_SEED_DEMO:-0}\" = \"1\" ]; then flask --app app seed-demo; fi; exec gunicorn --bind 0.0.0.0:${PORT:-10000} --workers 1 --access-logfile - --error-logfile - 'app:create_app()'"]

@@ -31,7 +31,9 @@ flowchart LR
 	checks --> image[Build da imagem Docker]
 ```
 
-O container usa o servidor de desenvolvimento do Flask por simplicidade académica; não deve ser exposto como serviço de produção. `MATRIX_SECRET_KEY` é fornecida pelo ambiente, nunca embutida na imagem. O healthcheck confirma que o processo consegue responder à rota de saúde, não que todas as funcionalidades estejam operacionais.
+O container usa Gunicorn e escuta em `PORT` (5000 no Compose local; 10000 no Blueprint Render). A aplicação continua a ser uma demo académica, sem hardening ou garantias de produção. `MATRIX_SECRET_KEY` é fornecida pelo ambiente, nunca embutida na imagem. O healthcheck confirma resposta à rota de saúde, não que todas as funcionalidades estejam operacionais.
+
+O `render.yaml` configura uma demo pública no plano gratuito, sem disco persistente. `MATRIX_SEED_DEMO=1` executa o seed fictício idempotente no arranque; visitantes podem modificar estes dados e o SQLite pode ser reposto quando a instância efémera reiniciar. Não colocar dados reais neste serviço.
 
 ## Componentes e responsabilidades
 

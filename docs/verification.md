@@ -53,10 +53,13 @@ Um primeiro teste esperava `username` no objeto `author`; o contrato expõe `id`
 - `docker compose -p matriz-ficha5 build`: imagem `matriz-ficha5-web` construída com sucesso.
 - `docker compose -p matriz-ficha5 up -d --wait`: serviço `web` ficou `healthy`; `/api/health` devolveu `{"status":"ok"}`.
 - Seed fictício executado no container; a base tinha 2 projetos antes e depois de `down`/`up`, confirmando persistência do volume `matriz-ficha5_matriz_data`.
+- Após a configuração para Render, a imagem foi reconstruída com Gunicorn; Compose ficou saudável na porta local 5056 e o seed terminou com sucesso.
+- Simulação isolada do comando Render com `PORT=10000` e `MATRIX_SEED_DEMO=1`: Gunicorn iniciou, `/api/health` respondeu `ok`, e login/criação/leitura/remoção passaram. O container de teste foi removido após o smoke test.
 - Smoke test HTTP contra o container: login 200, criar tarefa 201, consultar 200 e remover 204.
-- Logs sem erros críticos. O Flask indica que está a usar o servidor de desenvolvimento; é esperado para esta configuração académica e não adequada para produção.
+- Logs sem erros críticos; Gunicorn iniciou com um worker.
 - Inspeção das variáveis da imagem confirmou que `MATRIX_SECRET_KEY` não está embutida. A varredura de caminhos versionados não encontrou `.env` real nem chaves privadas.
 - Workflow `.github/workflows/ci.yml` parseado como YAML. `actionlint` não está instalado; a pipeline não foi executada no GitHub porque não foi feito push nem criada uma pull request.
+- `render.yaml` foi preparado conforme o schema/documentação oficial do Render; não foi validado pela API/CLI Render nem criado na conta. Configura serviço público free em Frankfurt, com `PORT=10000`, segredo gerado e seed demo.
 
 ### Versão candidata
 
@@ -65,5 +68,6 @@ Foi preparada a documentação `0.1.0-rc.1` em `CHANGELOG.md` e `docs/releases/v
 ### Limitações
 
 - A pipeline remota continua por verificar no GitHub Actions; a validação local do YAML não substitui essa execução.
+- O serviço Render ainda não foi criado; é necessário ligar o repositório no dashboard e aguardar o deploy/checks. O free service tem filesystem efémero; a demo usa dados fictícios públicos e não deve receber dados reais.
 - A stack foi iniciada para os testes e parada com `docker compose down`, preservando intencionalmente o volume de validação. Não executar `docker compose down -v` sem intenção explícita de apagar os dados.
 - A configuração usa o servidor de desenvolvimento Flask e destina-se apenas ao exercício local.

@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: matriz-demo
+    runtime: docker
+    plan: free
+    region: frankfurt
+    autoDeployTrigger: checksPass
+    healthCheckPath: /api/health
+    envVars:
+      - key: MATRIX_SECRET_KEY
+        generateValue: true
+      - key: MATRIX_COOKIE_SECURE
+        value: "1"
+      - key: MATRIX_SEED_DEMO
+        value: "1"
+      - key: PORT
+        value: "10000"
